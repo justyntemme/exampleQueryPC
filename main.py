@@ -7,10 +7,10 @@ import requests
 
 logging.basicConfig(level=logging.INFO)
 
-TL_URL = os.environ.get("TL_URL")
 
-# This helps with line lengths for readability
-n = None
+# Global Variables
+n = None  # To shorten line lengths
+TL_URL = os.environ.get("TL_URL")
 
 
 def getScans(token: str) -> Tuple[int, str]:
