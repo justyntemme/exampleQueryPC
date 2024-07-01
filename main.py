@@ -9,9 +9,12 @@ logging.basicConfig(level=logging.INFO)
 
 TL_URL = os.environ.get("TL_URL")
 
+# This helps with line lengths for readability
+n = None
+
 
 def getScans(token: str) -> Tuple[int, str]:
-    scanURL = TL_URL + "/api/v1/scans" if TL_URL is not None else exit()
+    scanURL = TL_URL + "/api/v1/scans" if TL_URL is not None else exit(1)
     headers = {
         "accept": "application/json; charset=UTF-8",
         "content-type": "application/json",
@@ -23,7 +26,7 @@ def getScans(token: str) -> Tuple[int, str]:
 
 
 def generateCwpToken(accessKey: str, accessSecret: str) -> Tuple[int, str]:
-    authURL = f"{TL_URL}/api/v1/authenticate" if TL_URL is not None else exit()
+    authURL = f"{TL_URL}/api/v1/authenticate" if TL_URL is not n else exit(1)
 
     headers = {
         "accept": "application/json; charset=UTF-8",
@@ -61,7 +64,7 @@ def main():
         else (None, None)
     )
 
-    responseCode, content = getScans(cwpToken) if cwpToken else (exit())
+    responseCode, content = getScans(cwpToken) if cwpToken else (exit(1))
     logging.info(responseCode)
     logging.info(content)
 
