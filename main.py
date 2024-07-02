@@ -49,15 +49,17 @@ def generateCwpToken(accessKey: str, accessSecret: str) -> Tuple[int, str]:
     return response.status_code, ""
 
 
+def check_param(param_name: str) -> str:
+    param_value = os.environ.get(param_name)
+    if param_value is None:
+        logging.error(f"Missing {param_name}")
+        raise ValueError(f"Missing {param_name}")
+    return param_value
+
+
 def main():
-    accessKey = os.environ.get("PC_IDENTITY")
-    accessSecret = os.environ.get("PC_SECRET")
-    if accessKey is None:
-        logging.error("Missing PC_IDENTITY")
-    elif accessSecret is None:
-        logging.error("Missing PC_SECRET")
-    elif TL_URL is None:
-        logging.error("Missing TL_URL")
+    P: Tuple[str, str, str] = ("PC_IDENTITY", "PC_SECRET", "TL_URL")
+    accessKey, accessSecret, _ = map(check_param, P)
     responseCode, cwpToken = (
         generateCwpToken(accessKey, accessSecret)
         if accessKey and accessSecret
