@@ -11,6 +11,7 @@ logging.basicConfig(level=logging.INFO)
 # Global Variables
 n = None  # To shorten line lengths
 TL_URL = os.environ.get("TL_URL")
+PC_URL = os.environ.get("PC_URL")
 
 
 def getScans(token: str) -> Tuple[int, str]:
@@ -23,6 +24,29 @@ def getScans(token: str) -> Tuple[int, str]:
 
     response = requests.get(scanURL, headers=headers, timeout=60, verify=False)
     return (response.status_code, response.text)
+
+
+def generateCSPMToken(accessKey: str, accessSecret: str) -> Tuple[int, str]:
+    authURL = cspmURL + "/login"
+    headers = {
+        "accept": "application/json; charset=UTF-8",
+        "content-type": "application/json",
+    }
+    body = {"username": accessKey, "password": accessSecret}
+    response = requests.post(
+        authURL, headers=headers, json=body, timeout=60, verify=False
+    )
+
+    if response.status_code == 200:
+        data = json.loads(response.text)
+        logging.info("Token acquired")
+        return 200, data["token"]
+    else:
+        logging.error(
+            "Unable to acquire spm token with error code: %s", response.status_code
+        )
+
+    return response.status_code, ""
 
 
 def generateCwpToken(accessKey: str, accessSecret: str) -> Tuple[int, str]:
@@ -58,7 +82,7 @@ def check_param(param_name: str) -> str:
 
 
 def main():
-    P: Tuple[str, str, str] = ("PC_IDENTITY", "PC_SECRET", "TL_URL")
+    P: Tuple[str, str, str, str] = ("PC_IDENTITY", "PC_SECRET", "TL_URL", "PC_URL")
     accessKey, accessSecret, _ = map(check_param, P)
     responseCode, cwpToken = (
         generateCwpToken(accessKey, accessSecret)
