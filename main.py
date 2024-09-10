@@ -10,12 +10,12 @@ logging.basicConfig(level=logging.INFO)
 
 # Global Variables
 n = None  # To shorten line lengths
-TL_URL = os.environ.get("TL_URL")
-PC_URL = os.environ.get("PC_URL")
+tlUrl = os.environ.get("tlUrl")
+pcUrl = os.environ.get("pcUrl")
 
 
 def getScans(token: str) -> Tuple[int, str]:
-    scanURL = TL_URL + "/api/v1/scans" if TL_URL is not None else exit(1)
+    scanURL = tlUrl + "/api/v1/scans" if tlUrl is not None else exit(1)
     headers = {
         "accept": "application/json; charset=UTF-8",
         "content-type": "application/json",
@@ -27,7 +27,7 @@ def getScans(token: str) -> Tuple[int, str]:
 
 
 def generateCSPMToken(accessKey: str, accessSecret: str) -> Tuple[int, str]:
-    authURL = cspmURL + "/login"
+    authURL = pcUrl + "/login"
     headers = {
         "accept": "application/json; charset=UTF-8",
         "content-type": "application/json",
@@ -50,7 +50,7 @@ def generateCSPMToken(accessKey: str, accessSecret: str) -> Tuple[int, str]:
 
 
 def generateCwpToken(accessKey: str, accessSecret: str) -> Tuple[int, str]:
-    authURL = f"{TL_URL}/api/v1/authenticate" if TL_URL is not n else exit(1)
+    authURL = f"{tlUrl}/api/v1/authenticate" if tlUrl is not n else exit(1)
 
     headers = {
         "accept": "application/json; charset=UTF-8",
@@ -73,17 +73,17 @@ def generateCwpToken(accessKey: str, accessSecret: str) -> Tuple[int, str]:
     return response.status_code, ""
 
 
-def check_param(param_name: str) -> str:
-    param_value = os.environ.get(param_name)
-    if param_value is None:
-        logging.error(f"Missing {param_name}")
-        raise ValueError(f"Missing {param_name}")
-    return param_value
+def checkParam(paramName: str) -> str:
+    paramValue = os.environ.get(paramName)
+    if paramValue is None:
+        logging.error(f"Missing {paramName}")
+        raise ValueError(f"Missing {paramName}")
+    return paramValue
 
 
 def main():
-    P: Tuple[str, str, str, str] = ("PC_IDENTITY", "PC_SECRET", "TL_URL", "PC_URL")
-    accessKey, accessSecret, _ = map(check_param, P)
+    P: Tuple[str, str, str, str] = ("pcIdentity", "pcSecret", "tlUrl", "pcUrl")
+    accessKey, accessSecret, _, _ = map(checkParam, P)
     responseCode, cwpToken = (
         generateCwpToken(accessKey, accessSecret)
         if accessKey and accessSecret
